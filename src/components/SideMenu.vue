@@ -20,8 +20,8 @@
           <div v-if="legend.length > 0" class="legend__items">
             <Draggable v-model="legend">
               <LegendItem
-                v-for="(item, index) in legend"
-                :key="index"
+                v-for="item in legend"
+                :key="item.group_id"
                 :color="item.color"
                 :text="item.text"
                 :counter="item.counter"
@@ -32,7 +32,7 @@
           <span v-else class="legend--empty"> Список пуст </span>
         </div>
         <div class="legend__chart">
-          <PieChart ref="chart" />
+          <PieChart v-bind:legend="legend" v-if="!isUserOpenned" ref="chart" />
         </div>
       </div>
       <div v-else class="profile">
@@ -49,8 +49,8 @@ import LegendItem from "./SideMenu/LegendItem.vue";
 import PersonCard from "./SideMenu/PersonCard.vue";
 import legend from "@/assets/data/legend.json";
 import people from "@/assets/data/people.json";
-import { Doughnut } from "vue-chartjs";
 import Draggable from "vuedraggable";
+import PieChart from "@/components/SideMenu/PieChart";
 
 export default {
   props: {
@@ -66,8 +66,8 @@ export default {
   components: {
     LegendItem,
     PersonCard,
-    PieChart: Doughnut,
     Draggable,
+    PieChart,
   },
   data() {
     return {
@@ -79,9 +79,6 @@ export default {
   created() {
     this.loadLegend();
     this.loadPeople();
-  },
-  mounted() {
-    this.makeChart();
   },
   watch: {
     choosenUserId(newId) {
@@ -97,23 +94,6 @@ export default {
     },
     closeProfile() {
       this.$emit("update:isUserOpenned", false);
-    },
-    profileClosed() {
-      this.isUserOpenned = false;
-    },
-    makeChart() {
-      const legendChartData = {
-        labels: this.legend.map((it) => it.text),
-        datasets: [
-          {
-            label: "Легенда",
-            backgroundColor: this.legend.map((legendItem) => legendItem.color),
-            data: this.legend.map((legendItem) => legendItem.counter),
-          },
-        ],
-      };
-      const options = {};
-      this.$refs.chart.renderChart(legendChartData, options);
     },
   },
 };

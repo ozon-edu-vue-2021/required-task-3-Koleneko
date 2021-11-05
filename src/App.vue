@@ -1,10 +1,9 @@
 <template>
   <div id="app">
     <div class="office">
-      <Map @clicked="tableClicked" />
+      <Map @tableClicked="tableClicked" @mapClicked="mapClicked" />
       <SideMenu
-        @update:isUserOpenned="profileClosed"
-        :isUserOpenned="isUserOpenned"
+        v-bind:isUserOpenned.sync="isUserOpenned"
         :choosenUserId="choosenUserId"
       />
     </div>
@@ -29,10 +28,11 @@ export default {
   },
   methods: {
     tableClicked(id) {
-      this.choosenUserId = id;
+      // После эммита id приводится к строке? Хотя когда получаю значение из html оно является числом
+      this.choosenUserId = Number(id);
       this.isUserOpenned = true;
     },
-    profileClosed() {
+    mapClicked() {
       this.isUserOpenned = false;
     },
   },

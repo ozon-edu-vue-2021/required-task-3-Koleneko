@@ -1,5 +1,5 @@
 <template>
-  <div class="map">
+  <div @click="mapClickHandler" class="map">
     <h3>Карта офиса</h3>
 
     <div v-if="!isLoading" class="map-root">
@@ -47,7 +47,7 @@ export default {
   methods: {
     drawTables() {
       const svgTablesGroup = this.g.append("g").classed("groupPlaces", true);
-      this.tables.map((table) => {
+      this.tables.forEach((table) => {
         const svgTable = svgTablesGroup
           .append("g")
           .attr("transform", `translate(${table.x}, ${table.y}) scale(0.5)`)
@@ -56,7 +56,6 @@ export default {
 
         svgTable
           .append("g")
-          .on("click", this.tableClick)
           .attr("transform", `rotate(${table.rotate || 0})`)
           .attr("group_id", table.group_id)
           .attr("id", table._id)
@@ -70,6 +69,14 @@ export default {
     },
     tableClick(event) {
       this.$emit("clicked", Number(event.currentTarget.attributes.id.value));
+    },
+    mapClickHandler(event) {
+      event.target.closest(".employer-place")
+        ? this.$emit(
+            "tableClicked",
+            event.target.closest(".employer-place").attributes.id.value
+          )
+        : this.$emit("mapClicked");
     },
   },
 };
